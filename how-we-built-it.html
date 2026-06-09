@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How We Built ROCKERIZER — a brand, a human & Claude</title>
+<meta name="description" content="The exact method we used to turn a brand into a live website, with a human and Claude — start to finish.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bungee&family=Permanent+Marker&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --purple:#4B00A8;--magenta:#B100A8;--pink:#FF008C;--yellow:#FFC31A;--orange:#FF6A00;--ink:#0D0D0D;--white:#FFF;--cyan:#00E5FF;
+  --bd:4px solid var(--ink);--sh:7px 7px 0 var(--ink);
+  --disp:"Anton",sans-serif;--chunk:"Bungee",sans-serif;--script:"Permanent Marker",cursive;--body:"Poppins",sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--body);color:var(--ink);background:var(--yellow);overflow-x:hidden;
+  background-image:radial-gradient(var(--ink) 1.3px,transparent 1.3px);background-size:26px 26px}
+.wrap{max-width:920px;margin:0 auto;padding:0 22px}
+section{padding:78px 0;position:relative}
+/* progress */
+.prog{position:fixed;top:0;left:0;height:6px;background:var(--pink);width:0;z-index:999;box-shadow:0 0 0 1px var(--ink)}
+/* top bar */
+.bar{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:10px 22px;background:var(--purple);border-bottom:var(--bd)}
+.bar img{height:24px}
+.bar a.home{font-family:var(--chunk);font-size:11px;color:var(--white);text-decoration:none;border:2px solid var(--white);padding:7px 13px;border-radius:100px}
+.bar a.home:hover{background:var(--yellow);color:var(--ink);border-color:var(--ink)}
+/* hero */
+.hero{padding:90px 0 70px;text-align:center}
+.kick{display:inline-block;font-family:var(--chunk);font-size:12px;background:var(--cyan);border:var(--bd);border-radius:100px;padding:8px 16px;box-shadow:4px 4px 0 var(--ink);transform:rotate(-2deg)}
+.hero h1{font-family:var(--disp);font-size:clamp(46px,11vw,104px);line-height:.86;margin:22px 0 6px;text-transform:uppercase}
+.hero h1 em{font-style:normal;color:var(--pink);-webkit-text-stroke:3px var(--ink);text-shadow:5px 5px 0 var(--yellow);paint-order:stroke fill}
+.hero .sub{font-family:var(--script);font-size:clamp(18px,4.6vw,26px);margin-top:8px}
+.hero .lede{max-width:620px;margin:20px auto 0;font-size:17px;font-weight:600}
+.scrollcue{margin-top:34px;font-family:var(--chunk);font-size:11px;letter-spacing:.1em;opacity:.7;animation:bob 1.8s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+/* pipeline diagram */
+.mapsec{background:var(--ink);color:var(--white);border-top:var(--bd);border-bottom:var(--bd)}
+.mapsec h2{color:var(--yellow)}
+.pipe{display:flex;flex-direction:column;gap:0;margin-top:30px;align-items:center}
+.node{width:100%;max-width:560px;background:var(--white);color:var(--ink);border:var(--bd);border-radius:14px;box-shadow:var(--sh);
+  padding:16px 18px;display:flex;align-items:center;gap:14px}
+.node .nn{font-family:var(--disp);font-size:30px;line-height:1;color:var(--white);background:var(--purple);border:3px solid var(--ink);border-radius:10px;width:48px;height:48px;display:grid;place-items:center;flex:none}
+.node .nt{font-family:var(--chunk);font-size:15px}
+.node .nd{font-size:12.5px;font-weight:600;opacity:.8;margin-top:2px}
+.conn{width:5px;height:30px;background:var(--cyan)}
+.node:nth-child(1) .nn{background:var(--purple)} .node:nth-child(3) .nn{background:var(--magenta)}
+.node:nth-child(5) .nn{background:var(--pink)} .node:nth-child(7) .nn{background:var(--orange)}
+.node:nth-child(9) .nn{background:var(--purple)} .node:nth-child(11) .nn{background:var(--magenta)}
+.node:nth-child(13) .nn{background:var(--pink)} .node:nth-child(15) .nn{background:var(--orange)}
+/* phase blocks */
+.phase{border-top:var(--bd)}
+.p1{background:var(--purple);color:var(--white)} .p2{background:var(--cyan)} .p3{background:var(--pink);color:var(--white)}
+.p4{background:var(--yellow)} .p5{background:var(--magenta);color:var(--white)} .p6{background:var(--orange);color:var(--white)}
+.p7{background:var(--cyan)} .p8{background:var(--purple);color:var(--white)}
+.pnum{font-family:var(--disp);font-size:clamp(60px,16vw,150px);line-height:.8;opacity:.22}
+.phase h2{font-family:var(--disp);font-size:clamp(32px,7vw,60px);line-height:.92;text-transform:uppercase;margin:-6px 0 14px}
+.phase p{font-size:17px;font-weight:600;max-width:640px}
+.phase p+p{margin-top:12px}
+.tagrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.tag{font-family:var(--chunk);font-size:11px;background:var(--ink);color:var(--white);padding:7px 13px;border-radius:100px}
+.p2 .tag,.p4 .tag,.p7 .tag{background:var(--ink);color:var(--white)}
+.split{display:flex;gap:14px;flex-wrap:wrap;margin-top:22px}
+.who{flex:1;min-width:220px;background:rgba(255,255,255,.14);border:3px solid currentColor;border-radius:12px;padding:14px 16px}
+.who .wl{font-family:var(--chunk);font-size:12px;margin-bottom:6px}
+.who.you{background:var(--white);color:var(--ink);border-color:var(--ink);box-shadow:5px 5px 0 var(--ink)}
+.who.cl{background:var(--ink);color:var(--white);border-color:var(--ink);box-shadow:5px 5px 0 rgba(0,0,0,.4)}
+.who ul{list-style:none;font-size:13px;font-weight:600}
+.who li{padding:3px 0 3px 16px;position:relative}
+.who li:before{content:"\25B8";position:absolute;left:0;opacity:.7}
+/* palette + type samples */
+.swatches{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.sw{width:54px;height:54px;border:3px solid var(--ink);border-radius:10px;box-shadow:3px 3px 0 var(--ink)}
+.typed{margin-top:18px;display:flex;flex-direction:column;gap:4px}
+.typed span{background:var(--white);color:var(--ink);border:3px solid var(--ink);border-radius:8px;padding:6px 12px;display:inline-block;width:fit-content}
+/* human x claude */
+.hx{background:var(--ink);color:var(--white);border-top:var(--bd);border-bottom:var(--bd)}
+.hx h2{color:var(--cyan)}
+/* result */
+.result{text-align:center}
+.result h2{font-family:var(--disp);font-size:clamp(40px,10vw,92px);line-height:.86;text-transform:uppercase}
+.result h2 em{font-style:normal;color:var(--pink);-webkit-text-stroke:3px var(--ink);text-shadow:5px 5px 0 var(--cyan);paint-order:stroke fill}
+.cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:26px}
+.btn{font-family:var(--chunk);font-size:16px;text-decoration:none;color:var(--ink);background:var(--white);border:var(--bd);border-radius:100px;padding:15px 26px;box-shadow:var(--sh)}
+.btn.y{background:var(--yellow)} .btn.p{background:var(--pink);color:var(--white)}
+.btn:active{transform:translate(3px,3px);box-shadow:3px 3px 0 var(--ink)}
+.h2k{font-family:var(--chunk);font-size:13px;color:var(--purple);margin-bottom:6px}
+.mapsec .h2k{color:var(--cyan)} .p1 .h2k,.p3 .h2k,.p5 .h2k,.p6 .h2k,.p8 .h2k,.hx .h2k{color:var(--yellow)}
+h2.big{font-family:var(--disp);font-size:clamp(30px,6.5vw,52px);text-transform:uppercase;line-height:.92}
+footer{background:var(--ink);color:var(--white);text-align:center;padding:34px 22px;font-family:var(--chunk);font-size:11px}
+footer a{color:var(--cyan);text-decoration:none;margin:0 8px}
+/* reveal */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .6s ease,transform .6s ease}
+.reveal.in{opacity:1;transform:none}
+.node.reveal{transform:translateY(20px) scale(.98)}
+.node.reveal.in{transform:none}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.scrollcue,.arc{animation:none}}
+</style>
+</head>
+<body>
+<div class="prog" id="prog"></div>
+
+<header class="bar">
+  <img src="https://res.cloudinary.com/du8ydfy3a/image/upload/q_auto/f_auto/v1780618515/PNGLogo_dbdsjx.png" alt="ROCKERIZER" onerror="this.style.display='none'">
+  <a class="home" href="index.html">&#8592; BACK TO SITE</a>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <span class="kick reveal in">THE MAKING OF</span>
+    <h1 class="reveal in">WE BUILT A<br><em>BRAND</em> WITH AI</h1>
+    <div class="sub reveal in">a human, an idea, and Claude</div>
+    <p class="lede reveal in">ROCKERIZER is a fake product &mdash; a hot glue gun and a bag of rocks. Gluing rocks to things, sold like a luxury fashion line. Here is the exact method we used to take it from a one-line idea to a living, playable website.</p>
+    <div class="scrollcue">SCROLL TO SEE HOW &#8595;</div>
+  </div>
+</section>
+
+<!-- PIPELINE MAP -->
+<section class="mapsec">
+  <div class="wrap">
+    <div class="h2k reveal">THE SYSTEM, IN ONE PICTURE</div>
+    <h2 class="big reveal" style="color:var(--yellow)">EIGHT MOVES, START TO LIVE</h2>
+    <p class="reveal" style="font-weight:600;margin-top:10px;max-width:620px">Every step feeds the next. The brand sits at the top, and everything below inherits from it &mdash; the copy, the look, the assets, the code, the sound, the game.</p>
+    <div class="pipe">
+      <div class="node reveal"><div class="nn">01</div><div><div class="nt">BRAND FOUNDATION</div><div class="nd">the idea, the voice, the rules</div></div></div>
+      <div class="conn reveal"></div>
+      <div class="node reveal"><div class="nn">02</div><div><div class="nt">COPY &amp; MESSAGING</div><div class="nd">names, taglines, the deadpan tone</div></div></div>
+      <div class="conn reveal"></div>
+      <div class="node reveal"><div class="nn">03</div><div><div class="nt">VISUAL IDENTITY</div><div class="nd">palette, type, components</div></div></div>
+      <div class="conn reveal"></div>
+      <div class="node reveal"><div class="nn">04</div><div><div class="nt">ASSET GENERATION</div><div class="nd">Higgsfield via MCP &mdash; stills &amp; video</div></div></div>
+      <div class="conn reveal"></div>
+      <div class="node reveal"><div class="nn">05</div><div><div class="nt">BUILD THE SITE</div><div class="nd">one self-contained HTML file</div></div></div>
+      <div class="conn reveal"></div>
+      <div class="node reveal"><div class="nn">06</div><div><div class="nt">SOUND DESIGN</div><div class="nd">real samples, Web Audio</div></div></div>
+      <div class="conn reveal"></div>
+      <div class="node reveal"><div class="nn">07</div><div><div class="nt">ARCADE GAME</div><div class="nd">an easter egg in the same DNA</div></div></div>
+      <div class="conn reveal"></div>
+      <div class="node reveal"><div class="nn">08</div><div><div class="nt">SHIP IT</div><div class="nd">GitHub &rarr; Vercel, live in seconds</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 01 -->
+<section class="phase p1">
+  <div class="wrap">
+    <div class="pnum reveal">01</div>
+    <div class="h2k reveal">START HERE, ALWAYS</div>
+    <h2 class="reveal">START WITH<br>THE BRAND</h2>
+    <p class="reveal">Nothing gets made until the brand exists. We locked three things first: the <b>idea</b> (a parody as-seen-on-TV product, sold with a straight face), the <b>voice</b> (sincere, premium, faintly unhinged &mdash; "get rockin'"), and the <b>system</b> that every later step would inherit.</p>
+    <p class="reveal">Get this right and the rest of the build practically writes itself, because every decision after it has a rule to follow.</p>
+    <div class="swatches reveal">
+      <span class="sw" style="background:#4B00A8"></span><span class="sw" style="background:#B100A8"></span><span class="sw" style="background:#FF008C"></span><span class="sw" style="background:#FFC31A"></span><span class="sw" style="background:#FF6A00"></span><span class="sw" style="background:#00E5FF"></span><span class="sw" style="background:#0D0D0D"></span>
+    </div>
+    <div class="split">
+      <div class="who you reveal"><div class="wl">THE HUMAN BROUGHT</div><ul><li>the idea &amp; the taste</li><li>what's funny, what's not</li><li>the final yes / no</li></ul></div>
+      <div class="who cl reveal"><div class="wl">CLAUDE BROUGHT</div><ul><li>turned it into a documented system</li><li>pressure-tested the concept</li><li>kept everything consistent</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 -->
+<section class="phase p2">
+  <div class="wrap">
+    <div class="pnum reveal">02</div>
+    <div class="h2k reveal">SAY IT OUT LOUD</div>
+    <h2 class="reveal">WRITE THE WORDS</h2>
+    <p class="reveal">With the voice locked, the copy comes fast: the product name, taglines, the four feature pillars (<b>REAL ROCKS &middot; MAX POWER &middot; EASY GRIP &middot; BUILT TO LAST</b>), the FAQ, the absurd-but-sincere sell. The trick is generating a lot, then keeping only what's funniest and most on-voice.</p>
+    <div class="typed reveal">
+      <span style="font-family:var(--disp);font-size:22px">BE A FASHION ROCKSTAR!</span>
+      <span style="font-family:var(--script);font-size:20px">Get rockin'!</span>
+    </div>
+    <div class="tagrow">
+      <span class="tag reveal">draft at volume</span><span class="tag reveal">cut to the best</span><span class="tag reveal">one locked voice</span>
+    </div>
+  </div>
+</section>
+
+<!-- 03 -->
+<section class="phase p3">
+  <div class="wrap">
+    <div class="pnum reveal">03</div>
+    <div class="h2k reveal">MAKE IT A LOOK</div>
+    <h2 class="reveal">BUILD THE<br>VISUAL KIT</h2>
+    <p class="reveal">A palette of eight colours, four typefaces with clear jobs, and a set of components &mdash; thick black borders, hard offset shadows, halftone dots, starbursts. Define it once as a reusable kit and the whole site feels like one thing instead of ten.</p>
+    <div class="typed reveal">
+      <span style="font-family:var(--disp)">ANTON &mdash; the big shouts</span>
+      <span style="font-family:var(--chunk);font-size:14px">BUNGEE &mdash; the chunky labels</span>
+      <span style="font-family:var(--script)">Permanent Marker &mdash; the human bits</span>
+      <span style="font-family:var(--body)">Poppins &mdash; the things you actually read</span>
+    </div>
+  </div>
+</section>
+
+<!-- 04 -->
+<section class="phase p4">
+  <div class="wrap">
+    <div class="pnum reveal">04</div>
+    <div class="h2k reveal">FILL THE WORLD</div>
+    <h2 class="reveal">GENERATE<br>THE ASSETS</h2>
+    <p class="reveal">Every image and video was made in <b>Higgsfield</b>, connected straight into the workspace through <b>MCP</b>. Photoreal stills came from Nano Banana; motion came from Kling and Seedance. Claude wrote each prompt to one locked photoreal recipe; the human generated and curated the keepers.</p>
+    <p class="reveal">Same pipeline for the game art: real rock photos, cut to clean transparent cut-outs, dropped straight into play.</p>
+    <div class="tagrow">
+      <span class="tag reveal">Nano Banana &mdash; stills</span><span class="tag reveal">Kling / Seedance &mdash; video</span><span class="tag reveal">MCP &mdash; right in the workflow</span><span class="tag reveal">human curates</span>
+    </div>
+  </div>
+</section>
+
+<!-- 05 -->
+<section class="phase p5">
+  <div class="wrap">
+    <div class="pnum reveal">05</div>
+    <div class="h2k reveal">ASSEMBLE IT</div>
+    <h2 class="reveal">BUILD<br>THE SITE</h2>
+    <p class="reveal">Claude wrote the site as a single self-contained HTML file &mdash; structure, styling and behaviour in one place, every asset wired in. Audio-reactive hero, parallax bands, a rock-sticker toy, all responsive down to a phone. No framework. No build step. Just a file that runs anywhere.</p>
+    <div class="tagrow">
+      <span class="tag reveal">HTML &middot; CSS &middot; JS</span><span class="tag reveal">no framework</span><span class="tag reveal">one file</span><span class="tag reveal">runs anywhere</span>
+    </div>
+  </div>
+</section>
+
+<!-- 06 -->
+<section class="phase p6">
+  <div class="wrap">
+    <div class="pnum reveal">06</div>
+    <div class="h2k reveal">GIVE IT EARS</div>
+    <h2 class="reveal">ADD<br>THE SOUND</h2>
+    <p class="reveal">A real stone-impact recording (from Epidemic Sound) was sliced into one-shots, embedded right inside the page as data, and played through the Web Audio API &mdash; pitch-shifted and stacked on the fly so the same rock never sounds twice. A small thing that makes everything feel real.</p>
+    <div class="tagrow">
+      <span class="tag reveal">real rock samples</span><span class="tag reveal">Web Audio API</span><span class="tag reveal">no repeats</span>
+    </div>
+  </div>
+</section>
+
+<!-- 07 -->
+<section class="phase p7">
+  <div class="wrap">
+    <div class="pnum reveal">07</div>
+    <div class="h2k reveal">HIDE A TOY INSIDE</div>
+    <h2 class="reveal">BUILD<br>A GAME</h2>
+    <p class="reveal">Then the fun part: an arcade easter egg built in the exact same brand language. <b>ROCKALANCHE</b> &mdash; a bubble-shooter where you fire real rocks at a wall of real rocks, match three to crumble them, and the wall creeps down on you. Same palette, same real rocks, same real rock sounds.</p>
+    <div class="tagrow">
+      <span class="tag reveal">aim &amp; bank shots</span><span class="tag reveal">match-3 crumble</span><span class="tag reveal">one-handed</span><span class="tag reveal">on-brand</span>
+    </div>
+  </div>
+</section>
+
+<!-- 08 -->
+<section class="phase p8">
+  <div class="wrap">
+    <div class="pnum reveal">08</div>
+    <div class="h2k reveal">PUT IT ONLINE</div>
+    <h2 class="reveal">SHIP IT</h2>
+    <p class="reveal">Because it's all static files, shipping is trivial: the files live in a <b>GitHub</b> repo, <b>Vercel</b> watches it, and every commit is live in about twenty seconds. The game is just another file in the same folder &mdash; link to it and it plays. No servers to run, nothing to maintain.</p>
+    <div class="tagrow">
+      <span class="tag reveal">GitHub</span><span class="tag reveal">Vercel</span><span class="tag reveal">static &middot; instant</span><span class="tag reveal">live in ~20s</span>
+    </div>
+  </div>
+</section>
+
+<!-- HUMAN x CLAUDE -->
+<section class="hx">
+  <div class="wrap">
+    <div class="h2k reveal">THE DIVISION OF LABOUR</div>
+    <h2 class="big reveal" style="color:var(--cyan)">HUMAN &times; CLAUDE</h2>
+    <p class="reveal" style="font-weight:600;margin-top:10px;max-width:640px">The method works because each side does what it's best at. The human owns the vision and the taste; Claude owns the structure, the volume, and the execution &mdash; and the loop between them is fast.</p>
+    <div class="split">
+      <div class="who you reveal"><div class="wl">HUMAN</div><ul><li>the idea and the standards</li><li>generating &amp; picking assets</li><li>creative direction &amp; final calls</li><li>"make it funnier / weirder / cleaner"</li></ul></div>
+      <div class="who cl reveal"><div class="wl">CLAUDE</div><ul><li>the brand system &amp; all the copy</li><li>every prompt for the assets</li><li>the full site &amp; game in code</li><li>fast rebuilds on each round of notes</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- RESULT -->
+<section class="result">
+  <div class="wrap">
+    <div class="h2k reveal" style="color:var(--purple)">AND THAT'S THE WHOLE TRICK</div>
+    <h2 class="reveal">NOW GO <em>ROCK</em><br>THE WORLD</h2>
+    <p class="reveal" style="font-weight:600;max-width:560px;margin:16px auto 0">One brand. One human. One AI. A live site and a playable game &mdash; built the same way you could build yours.</p>
+    <div class="cta">
+      <a class="btn y reveal" href="index.html">SEE THE SITE</a>
+      <a class="btn p reveal" href="rockalanche.html">&#9654; PLAY ROCKALANCHE</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  ROCKERIZER &middot; A PARODY BRAND BUILT WITH CLAUDE &amp; HIGGSFIELD
+  <div style="margin-top:10px"><a href="index.html">SITE</a><a href="rockalanche.html">GAME</a><a href="#top">TOP</a></div>
+</footer>
+
+<script>
+// scroll progress
+var prog=document.getElementById('prog');
+function onScroll(){var h=document.documentElement;var sc=h.scrollTop||document.body.scrollTop;var max=h.scrollHeight-h.clientHeight;prog.style.width=(max>0?(sc/max*100):0)+'%';}
+window.addEventListener('scroll',onScroll,{passive:true});onScroll();
+// reveal on scroll
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:0.15,rootMargin:'0px 0px -8% 0px'});
+document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
+</script>
+</body>
+</html>
